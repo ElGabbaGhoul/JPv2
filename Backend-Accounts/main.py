@@ -7,7 +7,7 @@ load_dotenv()
 import os
 secret_key=os.getenv('SECRET_KEY')
 algorithm=os.getenv('ALGORITHM')
-access_token_expires_minutes=os.getenv('ACCESS_TOKEN_EXPIRES_MINUTES')
+access_token_expires_minutes=int(os.getenv('ACCESS_TOKEN_EXPIRES_MINUTES'))
 
 
 @app.post("/token", response_model=Token)

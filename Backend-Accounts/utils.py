@@ -22,6 +22,7 @@ db = {
     }
 }
 
+# Move this to models.py
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -39,13 +40,14 @@ class UserInDB(User):
     hashed_password: str
 
 
+# App object
+app = FastAPI()
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
 
 
-# App object
-app = FastAPI()
-
+# Begin Auth
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
@@ -99,3 +101,10 @@ async def get_current_active_user(current_user: UserInDB = Depends(get_current_u
         raise HTTPException(status_code=400, detail="Inactive User")
     
     return current_user
+# End Auth
+
+# Begin Model Normalization
+def Trimmed_Datetime():
+    current_datetime = datetime.now()
+    trimmed_datetime = current_datetime.replace(microsecond=0)
+    return trimmed_datetime
