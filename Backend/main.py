@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Body
 from models import Playlist, UpdatePlaylistModel
 
 from database import (
@@ -8,10 +8,9 @@ from database import (
     update_playlist,
     remove_playlist
 )
-from fastapi import FastAPI, HTTPException, Body
 from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
-from datetime import datetime
+# from datetime import datetime
 
 # App object
 app = FastAPI()

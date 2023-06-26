@@ -104,7 +104,11 @@ async def get_current_active_user(current_user: UserInDB = Depends(get_current_u
 # End Auth
 
 # Begin Model Normalization
-def Trimmed_Datetime():
-    current_datetime = datetime.now()
-    trimmed_datetime = current_datetime.replace(microsecond=0)
-    return trimmed_datetime
+
+
+# wrote this to simplify model, decided to not use it
+# def Trimmed_Datetime():
+#     current_datetime = datetime.now()
+#     trimmed_datetime = current_datetime.replace(microsecond=0)
+#     return trimmed_datetime
+
