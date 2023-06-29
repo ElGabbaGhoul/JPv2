@@ -1,7 +1,7 @@
 # from typing import Optional
 from pydantic import BaseModel, Field
 from bson.objectid import ObjectId
-from typing import Optional
+from typing import List, Optional
 from bson import ObjectId
 
 
@@ -21,20 +21,26 @@ class PyObjectId(ObjectId):
         field_schema.update(type="string")
 
 
+class Song(BaseModel):
+    title: str
+    artist: str
+    duration: int # Duration of song in seconds
+
 class Playlist(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
     name: str
     description: str
+    created_by: int # User ID of creator
     created_on: str
     updated_on: str
     owner_id: str
-    tracks: list
-    duration: int
+    tracks: List[Song]
+    duration: int # Total playlist duration in seconds
     is_public: bool
-    tags: list
-    creator_notes: str
-    image_url: str
-    listener_comments: list
+    tags: List[str]
+    creator_notes: Optional[str]
+    image_url: Optional[str]
+    listener_comments: Optional[List[str]]
 
 
     class Config:
