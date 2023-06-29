@@ -66,7 +66,7 @@ async def put_playlist(id: str, playlist: UpdatePlaylistModel = Body(...)):
         response = await update_playlist(id, playlist)
     if response:
         return response
-    raise HTTPException(404, f"There is no TODO item with this title {id}")
+    raise HTTPException(404, f"There is no playlist with id of {id}")
 
 
 @app.delete("/api/playlist/{id}", response_description="Delete a playlist")
@@ -74,5 +74,5 @@ async def delete_playlist(id: str):
     response = await remove_playlist(id)
     if response:
         return "Successfully deleted playlist item"
-    raise HTTPException(404, f"There is no TODO item with this id:{id}")
+    raise HTTPException(404, f"There is no playlist with id of {id}")
 # Playlists End

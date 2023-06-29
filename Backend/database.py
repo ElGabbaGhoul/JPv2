@@ -8,7 +8,6 @@ connection_string = os.environ.get('DB_CONNECTION')
 
 client = motor.motor_asyncio.AsyncIOMotorClient(connection_string)  # helps to connect with mongodb compass
 database = client.PlaylistList  # name of database
-# same thing as a table in SQL not really sure on why this isnt deploying
 collection = database.playlist
 category_collection = database.category
 

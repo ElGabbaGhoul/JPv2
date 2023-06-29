@@ -6,7 +6,7 @@ load_dotenv()
 
 connection_string = os.environ.get('DB_CONNECTION')
 client = motor.motor_asyncio.AsyncIOMotorClient(connection_string)
-database = client.PlaylistList
+database = client.UserList
 collection = database.user
 
 # Account DB Calls Start

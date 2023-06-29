@@ -4,6 +4,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import timedelta
 from utils import *
+from models import User, UpdateUserModel
 from dotenv import load_dotenv
 load_dotenv()
 import os
@@ -30,7 +31,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
+# Begin auth functions
 @app.post("/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(db, form_data.username, form_data.password)
@@ -50,6 +51,14 @@ async def read_users_me(current_user: User = Depends(get_current_active_user)):
 async def read_own_items(current_user: User = Depends(get_current_active_user)):
     return [{"item_id": 1, "owner": current_user}]
 
+# End auth functions
+
+# Begin User API
+
+@app.get("/api/user")
+async def get_all_users():
+    response = await fetch_all_users()
+    return response
 
 @app.post("/api/user", response_description="Create new user", response_model=User)
 async def create_new_user(user: User = Body(...)):
@@ -58,3 +67,29 @@ async def create_new_user(user: User = Body(...)):
     if response:
         return response
     raise HTTPException(400, "Something went wrong / Bad Request")
+
+
+@app.get("/api/user/{id}", response_description="Get a single user", response_model=User)
+async def get_user_by_username(username: str):
+    response = await fetch_one_user(username)
+    if response:
+        return response
+    raise HTTPException(404, f"User with username {username} not found")
+
+@app.put("/api/user/{id}", response_description="Update a user", response_model=User)
+async def put_user(id: str, user: UpdateUserModel = Body(...)):
+    user = {k: v for k, v in user.dict().items() if v is not None}
+    if len(user) >= 1:
+        response = await update_user(id, user)
+    if response:
+        return response
+    raise HTTPException(404, f"There is no user item with ID of {id}")
+
+@app.delete("/api/user/{id}", response_description="Delete a user")
+async def delete_user(id: str):
+    response = await remove_user(id)
+    if response:
+        return "Successfully deleted user item"
+    raise HTTPException(404, f"There is no user with ID of {id}")
+
+# End user API

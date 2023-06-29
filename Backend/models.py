@@ -30,10 +30,9 @@ class Playlist(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
     name: str
     description: str
-    created_by: int # User ID of creator
+    created_by: str # User ID of creator
     created_on: str
     updated_on: str
-    owner_id: str
     tracks: List[Song]
     duration: int # Total playlist duration in seconds
     is_public: bool
@@ -49,12 +48,15 @@ class Playlist(BaseModel):
         json_encoders = {ObjectId: str}
         schema_extra = {
             "example": {
-                    'name': 'My Epic Playlist',
-                    'description': 'Songs for fighting bad guys',
-                    'created_on': '06/22/2023',
-                    'updated_on': '06/23/2023',
-                    'owner_id': 'A113',
-                    'tracks': ['BTK', 'lain', 'Leach', 'Amie'],
+                    'name': '',
+                    'description': '',
+                    'created_by': '',
+                    'created_on': '',
+                    'updated_on': '',
+                    'tracks': [
+                        {"title": "", "artist": "", "duration": 000},
+                        {"title": "", "artist": "", "duration": 000}
+                    ],
                     'duration': 43000,
                     'is_public': True,
                     'tags': ['cool', 'epic', 'genre'],
