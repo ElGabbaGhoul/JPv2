@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 from bson.objectid import ObjectId
 from typing import Optional
 from bson import ObjectId
-# from utils import Trimmed_Datetime
+
 
 class PyObjectId(ObjectId):
     @classmethod
@@ -71,3 +71,14 @@ class UpdateUserModel(BaseModel):
               'role':'Admin'
             }
         }
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    username: str or None = None
+
+
+class UserInDB(User):
+    hashed_password: str

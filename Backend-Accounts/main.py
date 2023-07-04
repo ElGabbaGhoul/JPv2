@@ -1,16 +1,28 @@
-from fastapi import Depends, HTTPException, status, Body
+from fastapi import FastAPI, Depends, HTTPException, status, Body
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import timedelta
-from utils import *
-from models import User, UpdateUserModel
+from models import User, UpdateUserModel, Token
 from dotenv import load_dotenv
+import motor.motor_asyncio
 load_dotenv()
 import os
 secret_key=os.getenv('SECRET_KEY')
 algorithm=os.getenv('ALGORITHM')
 access_token_expires_minutes=int(os.getenv('ACCESS_TOKEN_EXPIRES_MINUTES'))
+connection_string = os.environ.get('DB_CONNECTION')
+
+
+from utils import (
+    verify_password,
+    get_password_hash,
+    get_user,
+    authenticate_user,
+    create_access_token,
+    get_current_user,
+    get_current_active_user
+)
 
 from database import (
     fetch_all_users, 
@@ -19,6 +31,8 @@ from database import (
     update_user, 
     remove_user
     )
+
+app = FastAPI()
 
 # Set up a settings.py file later to import these settings?
 origins = ['*']
@@ -31,12 +45,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+db = motor.motor_asyncio.AsyncIOMotorClient(connection_string)
+database = db.UserList
+collection = database.user
+
 # Begin auth functions
 @app.post("/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or passowrd", headers={"WWW-Authenticate": "Bearer"})
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password", headers={"WWW-Authenticate": "Bearer"})
     access_token_expires = timedelta(minutes=access_token_expires_minutes)
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires)
@@ -83,13 +101,13 @@ async def put_user(id: str, user: UpdateUserModel = Body(...)):
         response = await update_user(id, user)
     if response:
         return response
-    raise HTTPException(404, f"There is no user item with ID of {id}")
+    raise HTTPException(404, f"User with ID of {id} not found.")
 
 @app.delete("/api/user/{id}", response_description="Delete a user")
 async def delete_user(id: str):
     response = await remove_user(id)
     if response:
         return "Successfully deleted user item"
-    raise HTTPException(404, f"There is no user with ID of {id}")
+    raise HTTPException(404, f"User with ID of {id} not found.")
 
 # End user API

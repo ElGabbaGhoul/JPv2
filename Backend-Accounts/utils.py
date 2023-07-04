@@ -1,44 +1,22 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from pydantic import BaseModel
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from dotenv import load_dotenv
+from models import TokenData, UserInDB
+import motor.motor_asyncio
+
 load_dotenv()
 import os
 secret_key=os.getenv('SECRET_KEY')
 algorithm=os.getenv('ALGORITHM')
 access_token_expires_minutes=os.getenv('ACCESS_TOKEN_EXPIRES_MINUTES')
+connection_string = os.environ.get('DB_CONNECTION')
 
-# Fake Database
-db = {
-    "tim": {
-        "username":"tim",
-        "full_name":"Tim Ruscica",
-        "email":"tim@gmail.com",
-        "hashed_password":"$2b$12$cJOxjcBBpipzGRjY0TgpleJ0TUzrv4K0DFU1QjJfa8ppi8VkPx5WC",
-        "disabled": False
-    }
-}
-
-# Move this to models.py
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
-class TokenData(BaseModel):
-    username: str or None = None
-
-class User(BaseModel):
-    username: str
-    email: str or None = None
-    full_name: str or None = None
-    disabled: bool or None = None
-
-class UserInDB(User):
-    hashed_password: str
-
+db = motor.motor_asyncio.AsyncIOMotorClient(connection_string)
+database = db.UserList
+collection = database.user
 
 # App object
 app = FastAPI()
@@ -101,14 +79,3 @@ async def get_current_active_user(current_user: UserInDB = Depends(get_current_u
         raise HTTPException(status_code=400, detail="Inactive User")
     
     return current_user
-# End Auth
-
-# Begin Model Normalization
-
-
-# wrote this to simplify model, decided to not use it
-# def Trimmed_Datetime():
-#     current_datetime = datetime.now()
-#     trimmed_datetime = current_datetime.replace(microsecond=0)
-#     return trimmed_datetime
-

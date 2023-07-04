@@ -86,12 +86,15 @@ class UpdatePlaylistModel(BaseModel):
         json_encoders = {ObjectId: str}
         schema_extra = {
             "example": {
-                    'name': 'My Epic Playlist',
-                    'description': 'Songs for fighting bad guys',
-                    'created_on': '06/22/2023',
-                    'updated_on': '06/23/2023',
-                    'owner_id': 'A113',
-                    'tracks': ['BTK', 'lain', 'Leach', 'Amie'],
+                    'name': '',
+                    'description': '',
+                    'created_by': '',
+                    'created_on': '',
+                    'updated_on': '',
+                    'tracks': [
+                        {"title": "", "artist": "", "duration": 000},
+                        {"title": "", "artist": "", "duration": 000}
+                    ],
                     'duration': 43000,
                     'is_public': True,
                     'tags': ['cool', 'epic', 'genre'],

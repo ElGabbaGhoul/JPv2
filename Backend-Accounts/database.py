@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 connection_string = os.environ.get('DB_CONNECTION')
+
 client = motor.motor_asyncio.AsyncIOMotorClient(connection_string)
 database = client.UserList
 collection = database.user
@@ -23,8 +24,8 @@ async def create_user(user):
     result = await collection.insert_one(user)
     return document
 
-async def fetch_one_user(id):
-    user = await collection.find_one({"_id": id})
+async def fetch_one_user(username):
+    user = await collection.find_one({"username": username})
     if user is not None:
         return user
     

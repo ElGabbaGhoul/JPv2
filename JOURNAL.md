@@ -32,3 +32,20 @@
     - Create new playlist working as intended
   - Fetch all playlists
     - 500 internal server error - 5 validation errors. created_by, track dictionary
+
+## 7/03
+  Playlist Backend
+  - get all playlists works, it wasn't working because I had old data in there.
+  - All functions work. 
+  
+  Accounts Backend
+  - not storing hashed password. create_new_user and get_all_users functions otherwise working as intended.
+  - get_user_by_username not functioning
+  - put_user working
+  - delete_user working
+  - get_user_by_username was trying to get username by id. functioning as intended. 
+
+  API functions work, just need to ensure that users are authenticated on logging in.
+
+  - reorganized accounts main.py, utils.py, models.py
+  - utils.py and main.py in backend-accounts have redundant functions that are counterintuitive. rework these functions and your backend will work fine.

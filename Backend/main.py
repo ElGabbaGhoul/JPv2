@@ -37,7 +37,7 @@ async def read_root():
 
 
 @app.get("/api/playlist")
-async def get_playlists():
+async def get_all_playlists():
     response = await fetch_all_playlists()
     return response
 
