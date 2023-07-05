@@ -3,8 +3,9 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import timedelta
-from models import User, UpdateUserModel, Token
+from models import User, UserInDB, UpdateUserModel, Token
 from dotenv import load_dotenv
+from database import get_password_hash
 import motor.motor_asyncio
 load_dotenv()
 import os
@@ -15,12 +16,10 @@ connection_string = os.environ.get('DB_CONNECTION')
 
 
 from utils import (
-    verify_password,
-    get_password_hash,
-    get_user,
+    # verify_password,
     authenticate_user,
     create_access_token,
-    get_current_user,
+    # get_current_user,
     get_current_active_user
 )
 
@@ -52,10 +51,11 @@ collection = database.user
 # Begin auth functions
 @app.post("/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = authenticate_user(db, form_data.username, form_data.password)
+    user = await authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password", headers={"WWW-Authenticate": "Bearer"})
     access_token_expires = timedelta(minutes=access_token_expires_minutes)
+    print(f'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',user)
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires)
     return {"access_token": access_token, "token_type": "bearer"}
@@ -79,7 +79,8 @@ async def get_all_users():
     return response
 
 @app.post("/api/user", response_description="Create new user", response_model=User)
-async def create_new_user(user: User = Body(...)):
+async def create_new_user(user: UserInDB = Body(...)):
+    user.hashed_password = get_password_hash(user.hashed_password)
     user = jsonable_encoder(user)
     response = await create_user(user)
     if response:

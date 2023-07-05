@@ -24,11 +24,9 @@ class User(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
     username: str
     email: str
-    password: str
     name: str
     profile_picture: Optional[str]
     role: str
-    created_on: str
 
 
 
@@ -40,11 +38,9 @@ class User(BaseModel):
             "example": {
               'username':'john_doe',
               'email':'john@doe.com',
-              'password':'johnisgreat1234',
               'name':'John Doe',
               'profile_picture':'https://example.com/profile.jpg',
-              'role':'Admin',
-              'created_on': '2023-06-26 11:42:34',
+              'role':'Admin'
             }
         }
 
@@ -52,7 +48,6 @@ class User(BaseModel):
 class UpdateUserModel(BaseModel):
     username: Optional[str] 
     email: Optional[str] 
-    password: Optional[str]
     name: Optional[str]
     profile_picture: Optional[str]
     role: Optional[str]
@@ -65,7 +60,6 @@ class UpdateUserModel(BaseModel):
             "example": {
               'username':'john_doe',
               'email':'john@doe.com',
-              'password':'johnisgreat1234',
               'name':'John Doe',
               'profile_picture':'https://example.com/profile.jpg',
               'role':'Admin'
@@ -79,6 +73,19 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     username: str or None = None
 
-
 class UserInDB(User):
     hashed_password: str
+
+    class Config:
+      arbitrary_types_allowed = True
+      json_encoders = {ObjectId: str}
+      schema_extra = {
+          "example": {
+            'username':'john_doe',
+            'email':'john@doe.com',
+            'name':'John Doe',
+            'profile_picture':'https://example.com/profile.jpg',
+            'role':'Admin',
+            'hashed_password':'password123'
+          }
+      }

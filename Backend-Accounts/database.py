@@ -1,7 +1,9 @@
 from models import User
 import motor.motor_asyncio
 import os
+from passlib.context import CryptContext
 from dotenv import load_dotenv
+from models import UserInDB
 load_dotenv()
 
 connection_string = os.environ.get('DB_CONNECTION')
@@ -9,6 +11,9 @@ connection_string = os.environ.get('DB_CONNECTION')
 client = motor.motor_asyncio.AsyncIOMotorClient(connection_string)
 database = client.UserList
 collection = database.user
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 
 # Account DB Calls Start
 
@@ -19,15 +24,18 @@ async def fetch_all_users():
         users.append(User(**document))
     return users
 
+def get_password_hash(password):
+    return pwd_context.hash(password)
+
 async def create_user(user):
     document = user
-    result = await collection.insert_one(user)
+    result = await collection.insert_one(document)
     return document
 
 async def fetch_one_user(username):
     user = await collection.find_one({"username": username})
     if user is not None:
-        return user
+        return UserInDB(**user)
     
 
 async def update_user(id, user):

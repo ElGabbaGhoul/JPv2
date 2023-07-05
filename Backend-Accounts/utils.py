@@ -5,6 +5,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from dotenv import load_dotenv
 from models import TokenData, UserInDB
+from database import fetch_one_user
 import motor.motor_asyncio
 
 load_dotenv()
@@ -29,19 +30,19 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
-def get_password_hash(password):
-    return pwd_context.hash(password)
 
-def get_user(db, username: str):
-    if username in db:
-        user_data = db[username]
-        return UserInDB(**user_data)
 
-def authenticate_user(db, username: str, password: str,):
-    user = get_user(db, username)
+# def get_user(db, username: str):
+#     if username in db:
+#         user_data = db[username]
+#         return UserInDB(**user_data)
+
+async def authenticate_user(username: str, password: str,):
+    # user = get_user(db, username)
+    user = await fetch_one_user(username)
     if not user:
         return False
-    if not verify_password(password,user.hashed_password):
+    if not verify_password(password, user.hashed_password):
         return False
     return user
 
