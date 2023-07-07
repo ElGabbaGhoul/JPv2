@@ -1,59 +1,140 @@
 <script>
-	import Counter from './Counter.svelte';
-	import welcome from '$lib/images/svelte-welcome.webp';
-	import welcome_fallback from '$lib/images/svelte-welcome.png';
+	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
+	import { isLoggedIn } from '$lib/stores/stores';
+
+	let username = '';
+	let password = '';
+	let accessToken = '';
+
+	async function handleLogin() {
+		const formData = new FormData();
+		formData.append('username', username);
+		formData.append('password', password);
+		console.log(formData);
+
+		try {
+			const response = await fetch('http://127.0.0.1:8000/token', {
+				method: 'POST',
+				// headers: {
+				// 	'Content-Type': 'application/json'
+				// },
+				body: formData
+			});
+			if (response.ok) {
+				console.log('hello world');
+				const data = await response.json();
+				accessToken = data.access_token;
+				console.log('Access Token:', accessToken);
+				// You can store the access token in a secure location or use it for subsequent API requests
+				document.cookie = `access_token=${encodeURIComponent(accessToken)}`;
+				$isLoggedIn = true;
+				goto('/home');
+			} else {
+				console.error('Login failed');
+				// Handle login failure
+			}
+		} catch (error) {
+			console.error('An error occurred during login:', error);
+			// Handle error
+		}
+	}
+
+	// Example function to perform actions after the component mounts
+	onMount(() => {
+		// Perform any initial actions or data fetching here
+	});
 </script>
+
+<!-- // Retrieve the access token from the cookie
+const cookies = document.cookie.split(';');
+let storedAccessToken = null; -->
+
+<!-- for (let cookie of cookies) {
+  const [name, value] = cookie.trim().split('=');
+  if (name === 'access_token') {
+    storedAccessToken = decodeURIComponent(value);
+    break;
+  }
+}
+
+console.log('Stored Access Token:', storedAccessToken); -->
 
 <svelte:head>
 	<title>Home</title>
 	<meta name="description" content="Svelte demo app" />
 </svelte:head>
 
-<section>
-	<h1>
-		<span class="welcome">
-			<picture>
-				<source srcset={welcome} type="image/webp" />
-				<img src={welcome_fallback} alt="Welcome" />
-			</picture>
-		</span>
-
-		to your new<br />SvelteKit app
-	</h1>
-
-	<h2>
-		try editing <strong>src/routes/+page.svelte</strong>
-	</h2>
-
-	<Counter />
-</section>
+<main class="flex items-center justify-center min-h-screen bg-gray-100">
+	<div class="bg-white p-8 rounded shadow-md w-96">
+		<div
+			class="flex flex-row w-full justify-center font-bold text-[28px] whitespace-nowrap text-rainbow"
+		>
+			Welcome to JamPack'd!
+		</div>
+		<h1 class="text-2xl font-semibold mb-6">Login</h1>
+		<form on:submit|preventDefault={handleLogin}>
+			<div class="mb-4">
+				<label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+				<input
+					type="text"
+					id="username"
+					class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+					bind:value={username}
+					required
+				/>
+			</div>
+			<div class="mb-6">
+				<label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+				<input
+					type="password"
+					id="password"
+					class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+					bind:value={password}
+					required
+				/>
+			</div>
+			<button
+				type="submit"
+				class="w-full py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+				>Login</button
+			>
+		</form>
+	</div>
+</main>
 
 <style>
-	section {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		flex: 0.6;
+	.text-rainbow {
+		background-image: linear-gradient(
+			to right,
+			red,
+			red,
+			orange,
+			yellow,
+			green,
+			rgb(23, 23, 216),
+			indigo,
+			violet,
+			indigo,
+			rgb(23, 23, 216),
+			green,
+			yellow,
+			orange,
+			red
+		);
+		-webkit-background-clip: text;
+		background-clip: text;
+		background-size: 200% auto;
+		color: transparent;
+		animation: rainbow-animation 3s linear infinite;
 	}
 
-	h1 {
-		width: 100%;
-	}
-
-	.welcome {
-		display: block;
-		position: relative;
-		width: 100%;
-		height: 0;
-		padding: 0 0 calc(100% * 495 / 2048) 0;
-	}
-
-	.welcome img {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		top: 0;
-		display: block;
+	@keyframes rainbow-animation {
+		0% {
+			background-position: 100% 50%;
+		}
+		100% {
+			background-position: -100% 50%;
+		}
 	}
 </style>

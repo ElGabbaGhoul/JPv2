@@ -1,21 +1,18 @@
 <script>
 	import '../app.postcss';
-	import Header from './Header.svelte';
-	import './styles.css';
+	import NavMenu from '$lib/components/NavMenu.svelte';
+	import { isLoggedIn } from '$lib/stores/stores';
 </script>
 
 <div class="app">
-	<Header />
-
 	<main>
+		{#if $isLoggedIn}
+			<NavMenu />
+		{/if}
 		<slot />
 	</main>
 
 	<div />
-
-	<footer>
-		<p>visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to learn SvelteKit</p>
-	</footer>
 </div>
 
 <style>
@@ -23,6 +20,7 @@
 		display: flex;
 		flex-direction: column;
 		min-height: 100vh;
+		background-color: grey;
 	}
 
 	main {
@@ -34,23 +32,5 @@
 		max-width: 64rem;
 		margin: 0 auto;
 		box-sizing: border-box;
-	}
-
-	footer {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		padding: 12px;
-	}
-
-	footer a {
-		font-weight: bold;
-	}
-
-	@media (min-width: 480px) {
-		footer {
-			padding: 12px 0;
-		}
 	}
 </style>

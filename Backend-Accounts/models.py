@@ -1,5 +1,4 @@
 from pydantic import BaseModel, Field
-from bson.objectid import ObjectId
 from typing import Optional
 from bson import ObjectId
 
@@ -71,7 +70,7 @@ class Token(BaseModel):
     token_type: str
 
 class TokenData(BaseModel):
-    username: str or None = None
+    email: str or None = None
 
 class UserInDB(User):
     hashed_password: str
