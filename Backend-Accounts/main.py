@@ -49,7 +49,7 @@ database = db.UserList
 collection = database.user
 
 # Begin auth functions
-@app.post("/token", response_model=Token)
+@app.post("/token", response_model=Token, tags=['auth'])
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     user = await authenticate_user(form_data.username, form_data.password)
     if not user:
@@ -61,11 +61,11 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@app.get("/users/me/", response_model=User)
+@app.get("/users/me/", response_model=User, tags=['auth'])
 async def read_users_me(current_user: User = Depends(get_current_active_user)):
     return current_user
 
-@app.get("/users/me/items")
+@app.get("/users/me/items", tags=['auth'])
 async def read_own_items(current_user: User = Depends(get_current_active_user)):
     return [{"item_id": 1, "owner": current_user}]
 
@@ -73,12 +73,12 @@ async def read_own_items(current_user: User = Depends(get_current_active_user)):
 
 # Begin User API
 
-@app.get("/api/user")
+@app.get("/api/user", tags=['users'])
 async def get_all_users():
     response = await fetch_all_users()
     return response
 
-@app.post("/api/user", response_description="Create new user", response_model=User)
+@app.post("/api/user", response_description="Create new user", response_model=User, tags=['users'])
 async def create_new_user(user: UserInDB = Body(...)):
     user.hashed_password = get_password_hash(user.hashed_password)
     user = jsonable_encoder(user)
@@ -88,14 +88,14 @@ async def create_new_user(user: UserInDB = Body(...)):
     raise HTTPException(400, "Something went wrong / Bad Request")
 
 
-@app.get("/api/user/{id}", response_description="Get a single user", response_model=User)
+@app.get("/api/user/{id}", response_description="Get a single user", response_model=User, tags=['users'])
 async def get_user_by_username(username: str):
     response = await fetch_one_user(username)
     if response:
         return response
     raise HTTPException(404, f"User with username {username} not found")
 
-@app.put("/api/user/{id}", response_description="Update a user", response_model=User)
+@app.put("/api/user/{id}", response_description="Update a user", response_model=User, tags=['users'])
 async def put_user(id: str, user: UpdateUserModel = Body(...)):
     user = {k: v for k, v in user.dict().items() if v is not None}
     if len(user) >= 1:
@@ -104,7 +104,7 @@ async def put_user(id: str, user: UpdateUserModel = Body(...)):
         return response
     raise HTTPException(404, f"User with ID of {id} not found.")
 
-@app.delete("/api/user/{id}", response_description="Delete a user")
+@app.delete("/api/user/{id}", response_description="Delete a user", tags=['users'])
 async def delete_user(id: str):
     response = await remove_user(id)
     if response:
