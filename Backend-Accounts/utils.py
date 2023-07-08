@@ -30,13 +30,6 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
-
-
-# def get_user(db, username: str):
-#     if username in db:
-#         user_data = db[username]
-#         return UserInDB(**user_data)
-
 async def authenticate_user(username: str, password: str,):
     # user = get_user(db, username)
     user = await fetch_one_user(username)
@@ -80,3 +73,7 @@ async def get_current_active_user(current_user: UserInDB = Depends(get_current_u
         raise HTTPException(status_code=400, detail="Inactive User")
     
     return current_user
+
+async def get_user_by_email(email):
+    user = await collection.find_one({"email": email})
+    return user is not None

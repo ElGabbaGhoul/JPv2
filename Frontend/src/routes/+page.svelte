@@ -64,6 +64,9 @@
 		};
 
 		try {
+			// API ENDPOINT FOR TESTING
+			// const response = await fetch('http://127.0.0.1:8000/api/user', {
+			// API ENDPOINT FOR LIVE
 			const response = await fetch('https://accounts-backend-api.onrender.com/api/user', {
 				method: 'POST',
 				headers: {
@@ -73,14 +76,17 @@
 			});
 
 			if (response.ok) {
-				console.log('Account created successfully');
-				alert('Signup successful! Please login!');
-				goto('/');
+				console.log(response.status);
+				console.log(await response.json());
+				console.log('Account creation successful!');
+				alert('Account creation successful! Please log in!');
 				// Handle success, e.g., display a success message
 			} else {
-				console.error('Account creation failed');
-				alert('Signup failed :(');
-				console.log(await response.json());
+				const responseData = await response.json();
+				if (response.status === 409) {
+					console.error('User already exists');
+					alert('A user with that email address already exists, try again!');
+				}
 				// Handle failure, e.g., display an error message
 			}
 		} catch (error) {
@@ -114,8 +120,8 @@ let storedAccessToken = null; -->
 console.log('Stored Access Token:', storedAccessToken); -->
 
 <svelte:head>
-	<title>Home</title>
-	<meta name="description" content="Svelte demo app" />
+	<title>Welcome to JamPack'd</title>
+	<meta name="description" content="JamPack'd! Create playlists from every music library!" />
 </svelte:head>
 
 <main class="flex items-center justify-center min-h-screen bg-gray-100">

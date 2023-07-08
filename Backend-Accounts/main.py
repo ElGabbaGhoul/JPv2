@@ -16,11 +16,10 @@ connection_string = os.environ.get('DB_CONNECTION')
 
 
 from utils import (
-    # verify_password,
     authenticate_user,
     create_access_token,
-    # get_current_user,
-    get_current_active_user
+    get_current_active_user,
+    get_user_by_email
 )
 
 from database import (
@@ -80,12 +79,20 @@ async def get_all_users():
 
 @app.post("/api/user", response_description="Create new user", response_model=User, tags=['users'])
 async def create_new_user(user: UserInDB = Body(...)):
+    # Check if email already exists in database
+    existing_user = await get_user_by_email(user.email)
+    if existing_user:
+        raise HTTPException(status_code=409, detail="User with email already exists")
+
+    # Hash password
     user.hashed_password = get_password_hash(user.hashed_password)
-    user = jsonable_encoder(user)
-    response = await create_user(user)
+
+    # Create user
+    user_dict = jsonable_encoder(user)
+    response = await create_user(user_dict)
     if response:
         return response
-    raise HTTPException(400, "Something went wrong / Bad Request")
+    raise HTTPException(status_code=400, detail="Something went wrong / Bad Request")
 
 
 @app.get("/api/user/{id}", response_description="Get a single user", response_model=User, tags=['users'])
