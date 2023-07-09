@@ -19,7 +19,8 @@ from utils import (
     authenticate_user,
     create_access_token,
     get_current_active_user,
-    get_user_by_email
+    get_user_by_email,
+    limiter
 )
 
 from database import (
@@ -78,6 +79,8 @@ async def get_all_users():
     return response
 
 @app.post("/api/user", response_description="Create new user", response_model=User, tags=['users'])
+# add this following decorator to any function to limit rates
+@limiter(key_prefix="user_signup", limit=10, duration=60)
 async def create_new_user(user: UserInDB = Body(...)):
     # Check if email already exists in database
     existing_user = await get_user_by_email(user.email)
