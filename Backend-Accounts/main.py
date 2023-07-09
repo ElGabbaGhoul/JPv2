@@ -19,8 +19,8 @@ from utils import (
     authenticate_user,
     create_access_token,
     get_current_active_user,
-    get_user_by_email,
-    limiter
+    get_user_by_email
+    # limiter
 )
 
 from database import (
