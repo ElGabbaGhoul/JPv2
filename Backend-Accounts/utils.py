@@ -81,24 +81,24 @@ async def get_user_by_email(email):
 
 # Basic rate limiting mechanism
 
-request_history = {}
-@app.middleware("http")
-async def limiter(request, call_next):
-    max_requests = 10
-    duration = 60  # 60 seconds
-    ip_address = request.client.host
+# request_history = {}
+# @app.middleware("http")
+# async def limiter(request, call_next):
+#     max_requests = 10
+#     duration = 60  # 60 seconds
+#     ip_address = request.client.host
 
-    if ip_address in request_history:
-        timestamps = request_history[ip_address]
-        # Remove timestamps older than the duration
-        timestamps = [timestamp for timestamp in timestamps if timestamp > time.time() - duration]
-        if len(timestamps) >= max_requests:
-            raise HTTPException(status_code=429, detail="Too Many Requests")
+#     if ip_address in request_history:
+#         timestamps = request_history[ip_address]
+#         # Remove timestamps older than the duration
+#         timestamps = [timestamp for timestamp in timestamps if timestamp > time.time() - duration]
+#         if len(timestamps) >= max_requests:
+#             raise HTTPException(status_code=429, detail="Too Many Requests")
 
-        timestamps.append(time.time())
-        request_history[ip_address] = timestamps
-    else:
-        request_history[ip_address] = [time.time()]
+#         timestamps.append(time.time())
+#         request_history[ip_address] = timestamps
+#     else:
+#         request_history[ip_address] = [time.time()]
 
-    response = await call_next(request)
-    return response
+#     response = await call_next(request)
+#     return response
