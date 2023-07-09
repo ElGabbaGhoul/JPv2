@@ -80,7 +80,7 @@ async def get_all_users():
 
 @app.post("/api/user", response_description="Create new user", response_model=User, tags=['users'])
 # add this following decorator to any function to limit rates
-@limiter(limit=10, duration=60)
+@limiter(request=10, call_next=60)
 async def create_new_user(user: UserInDB = Body(...)):
     # Check if email already exists in database
     existing_user = await get_user_by_email(user.email)
