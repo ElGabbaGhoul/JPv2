@@ -19,7 +19,8 @@ from utils import (
     authenticate_user,
     create_access_token,
     get_current_active_user,
-    get_user_by_email
+    check_db_for_user,
+    authenticate_user_by_email
     # limiter
 )
 
@@ -33,7 +34,6 @@ from database import (
 
 app = FastAPI()
 
-# Set up a settings.py file later to import these settings?
 origins = ['*']
 
 app.add_middleware(
@@ -51,9 +51,11 @@ collection = database.user
 # Begin auth functions
 @app.post("/token", response_model=Token, tags=['auth'])
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = await authenticate_user(form_data.username, form_data.password)
+    email = form_data.username # Use the 'username' field for the email input
+    plain_password = form_data.password
+    user = await authenticate_user_by_email(email, plain_password)
     if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password", headers={"WWW-Authenticate": "Bearer"})
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect email or password", headers={"WWW-Authenticate": "Bearer"})
     access_token_expires = timedelta(minutes=access_token_expires_minutes)
     print(f'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',user)
     access_token = create_access_token(
@@ -83,9 +85,9 @@ async def get_all_users():
 # @limiter(request=10, call_next=60)
 async def create_new_user(user: UserInDB = Body(...)):
     # Check if email already exists in database
-    existing_user = await get_user_by_email(user.email)
+    existing_user = await check_db_for_user(user.username)
     if existing_user:
-        raise HTTPException(status_code=409, detail="User with email already exists")
+        raise HTTPException(status_code=409, detail="User with username already exists")
 
     # Hash password
     user.hashed_password = get_password_hash(user.hashed_password)

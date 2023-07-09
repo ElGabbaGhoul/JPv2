@@ -23,7 +23,6 @@ class PyObjectId(ObjectId):
 class User(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
     username: str
-    email: str
     name: str
     profile_picture: Optional[str]
     role: str
@@ -36,8 +35,7 @@ class User(BaseModel):
         json_encoders = {ObjectId: str}
         schema_extra = {
             "example": {
-              'username':'john_doe',
-              'email':'john@doe.com',
+              'username':'john@doe.com',
               'name':'John Doe',
               'profile_picture':'https://example.com/profile.jpg',
               'role':'Admin'
@@ -58,8 +56,7 @@ class UpdateUserModel(BaseModel):
         json_encoders = {ObjectId: str}
         schema_extra = {
             "example": {
-              'username':'john_doe',
-              'email':'john@doe.com',
+              'username':'john@doe.com',
               'name':'John Doe',
               'profile_picture':'https://example.com/profile.jpg',
               'role':'Admin'
@@ -73,19 +70,22 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     email: str or None = None
 
-class UserInDB(User):
+class UserInDB(BaseModel):
+    username: str
     hashed_password: str
+    name: str
+    profile_picture: str
+    role: str
 
     class Config:
       arbitrary_types_allowed = True
       json_encoders = {ObjectId: str}
       schema_extra = {
-          "example": {
-            'username':'john_doe',
-            'email':'john@doe.com',
-            'name':'John Doe',
-            'profile_picture':'https://example.com/profile.jpg',
-            'role':'Admin',
-            'hashed_password':'password123'
-          }
-      }
+            "example": {
+              'username':'john@doe.com',
+              'name':'John Doe',
+              'profile_picture':'https://example.com/profile.jpg',
+              'role':'Admin',
+              'hashed_password':'password123'
+            }
+        }

@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import { isLoggedIn } from '$lib/stores/stores';
 
+	let isLoading = false;
 	let username = '';
 	let password = '';
 	let accessToken = '';
@@ -15,6 +16,9 @@
 		formData.append('password', password);
 
 		try {
+			// API ENDPOINT FOR TESTING
+			// const response = await fetch('http://127.0.0.1:8000/token', {
+			// API ENDPOINT FOR LIVE
 			const response = await fetch('https://accounts-backend-api.onrender.com/token', {
 				method: 'POST',
 				body: formData
@@ -46,8 +50,8 @@
 
 	// https://accounts-backend-api.onrender.com/api/user new user api endpoint for function handleSignUp
 	async function handleSignUp() {
+		isLoading = true;
 		const formData = new FormData();
-		formData.append('username', signupUsername);
 		formData.append('email', signupEmail);
 		formData.append('name', signupName);
 		formData.append('profile_picture', signupProfilePic);
@@ -55,8 +59,7 @@
 		formData.append('hashed_password', signupPassword);
 
 		const payload = {
-			username: signupUsername,
-			email: signupEmail,
+			username: signupEmail,
 			name: signupName,
 			profile_picture: signupProfilePic,
 			role: 'User',
@@ -76,10 +79,16 @@
 			});
 
 			if (response.ok) {
-				console.log(response.status);
-				console.log(await response.json());
-				console.log('Account creation successful!');
-				alert('Account creation successful! Please log in!');
+				const data = await response.json();
+				console.log(data);
+				accessToken = data.access_token;
+				console.log('Access Token:', accessToken);
+				// You can store the access token in a secure location or use it for subsequent API requests
+				document.cookie = `access_token=${encodeURIComponent(accessToken)}`;
+				$isLoggedIn = true;
+				goto('/home');
+				console.log('Account creation successful! Logging you in...');
+				alert('Account creation successful! Logging you in...');
 				// Handle success, e.g., display a success message
 			} else {
 				const responseData = await response.json();
@@ -92,6 +101,8 @@
 		} catch (error) {
 			console.error('An error occurred during account creation:', error);
 			// Handle error, e.g., display an error message
+		} finally {
+			isLoading = false;
 		}
 	}
 
@@ -131,101 +142,96 @@ console.log('Stored Access Token:', storedAccessToken); -->
 		>
 			Welcome to JamPack'd!
 		</div>
-
-		{#if !showSignUpForm}
-			<!-- Login Form -->
-			<h1 class="text-2xl font-semibold mb-6">Login</h1>
-			<form on:submit|preventDefault={handleLogin}>
-				<div class="mb-4">
-					<label for="username" class="block text-sm font-medium text-gray-700">Username</label>
-					<input
-						type="text"
-						id="username"
-						class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-						bind:value={username}
-						required
-					/>
-				</div>
-				<div class="mb-6">
-					<label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-					<input
-						type="password"
-						id="password"
-						class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-						bind:value={password}
-						required
-					/>
-				</div>
-				<button
-					type="submit"
-					class="w-full py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-				>
-					Login
-				</button>
-			</form>
-		{:else}
-			<!-- Signup Form -->
-			<div class="mt-4">
-				<h2 class="text-xl font-semibold mb-2">Sign up</h2>
-				<form on:submit|preventDefault={handleSignUp}>
+		{#if !isLoading}
+			{#if !showSignUpForm}
+				<!-- Login Form -->
+				<h1 class="text-2xl font-semibold mb-6">Login</h1>
+				<form on:submit|preventDefault={handleLogin}>
 					<div class="mb-4">
-						<label for="signup-username" class="block text-sm font-medium text-gray-700"
-							>Username</label
+						<label for="username" class="block text-sm font-medium text-gray-700"
+							>Email Address</label
 						>
 						<input
 							type="text"
-							id="signup-username"
+							id="username"
 							class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-							bind:value={signupUsername}
-							required
-						/>
-					</div>
-					<div class="mb-4">
-						<label for="signup-password" class="block text-sm font-medium text-gray-700"
-							>Password</label
-						>
-						<input
-							type="password"
-							id="signup-password"
-							class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-							bind:value={signupPassword}
-							required
-						/>
-					</div>
-					<div class="mb-4">
-						<label for="signup-email" class="block text-sm font-medium text-gray-700">Email</label>
-						<input
-							type="email"
-							id="signup-email"
-							class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-							bind:value={signupEmail}
-							required
-						/>
-					</div>
-					<div class="mb-4">
-						<label for="signup-name" class="block text-sm font-medium text-gray-700">Name</label>
-						<input
-							type="text"
-							id="signup-name"
-							class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-							bind:value={signupName}
+							bind:value={username}
 							required
 						/>
 					</div>
 					<div class="mb-6">
-						<label for="signup-profile-pic" class="block text-sm font-medium text-gray-700"
-							>Profile Picture (optional)</label
-						>
-						<input type="file" id="signup-profile-pic" bind:value={signupProfilePic} />
+						<label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+						<input
+							type="password"
+							id="password"
+							class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+							bind:value={password}
+							required
+						/>
 					</div>
 					<button
 						type="submit"
 						class="w-full py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
 					>
-						Create Account
+						Login
 					</button>
 				</form>
-			</div>
+			{:else}
+				<!-- Signup Form -->
+				<div class="mt-4">
+					<h2 class="text-xl font-semibold mb-2">Sign up</h2>
+					<form on:submit|preventDefault={handleSignUp}>
+						<div class="mb-4">
+							<label for="signup-username" class="block text-sm font-medium text-gray-700"
+								>Email Address</label
+							>
+							<input
+								type="text"
+								id="signup-username"
+								class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+								bind:value={signupEmail}
+								required
+							/>
+						</div>
+						<div class="mb-4">
+							<label for="signup-password" class="block text-sm font-medium text-gray-700"
+								>Password</label
+							>
+							<input
+								type="password"
+								id="signup-password"
+								class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+								bind:value={signupPassword}
+								required
+							/>
+						</div>
+						<div class="mb-4">
+							<label for="signup-name" class="block text-sm font-medium text-gray-700">Name</label>
+							<input
+								type="text"
+								id="signup-name"
+								class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+								bind:value={signupName}
+								required
+							/>
+						</div>
+						<div class="mb-6">
+							<label for="signup-profile-pic" class="block text-sm font-medium text-gray-700"
+								>Profile Picture (optional)</label
+							>
+							<input type="file" id="signup-profile-pic" bind:value={signupProfilePic} />
+						</div>
+						<button
+							type="submit"
+							class="w-full py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+						>
+							Create Account
+						</button>
+					</form>
+				</div>
+			{/if}
+		{:else}
+			<div class="loader">Loading...</div>
 		{/if}
 
 		<button

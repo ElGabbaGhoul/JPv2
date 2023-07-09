@@ -28,12 +28,12 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
 
 
 # Begin Auth
-def verify_password(plain_password, hashed_password):
+async def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
-async def authenticate_user(username: str, password: str,):
-    # user = get_user(db, username)
-    user = await fetch_one_user(username)
+async def authenticate_user(email: str, password: str,):
+    # user = get_user(db, email)
+    user = await fetch_one_user(email)
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
@@ -75,9 +75,15 @@ async def get_current_active_user(current_user: UserInDB = Depends(get_current_u
     
     return current_user
 
-async def get_user_by_email(email):
-    user = await collection.find_one({"email": email})
+async def check_db_for_user(username):
+    user = await collection.find_one({"username": username})
     return user is not None
+
+async def authenticate_user_by_email(email, plain_password):
+    user = await collection.find_one({"username": email})
+    if user and verify_password(plain_password, user.get('hashed_password')):
+        return UserInDB(**user)
+    return None
 
 # Basic rate limiting mechanism
 

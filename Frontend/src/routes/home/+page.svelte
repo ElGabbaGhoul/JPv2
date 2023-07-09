@@ -1,1 +1,2 @@
-<div>Hello Home</div>
+<div>Hello Search</div>
+<div>Nothing here...yet!</div>
