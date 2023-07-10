@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { isLoggedIn } from '$lib/stores/stores';
+	import PasswordStrengthMeter from '$lib/components/PasswordStrengthMeter.svelte';
 
 	let isLoading = false;
 	let username = '';
@@ -11,21 +12,22 @@
 	let showSignUpForm = false;
 
 	async function handleLogin() {
+		isLoading = true;
 		const formData = new FormData();
 		formData.append('username', username);
 		formData.append('password', password);
 
 		try {
 			// API ENDPOINT FOR TESTING
-			// const response = await fetch('http://127.0.0.1:8000/token', {
-			// API ENDPOINT FOR LIVE
-			const response = await fetch('https://accounts-backend-api.onrender.com/token', {
+			const response = await fetch('http://127.0.0.1:8000/token', {
+				// API ENDPOINT FOR LIVE
+				// const response = await fetch('https://accounts-backend-api.onrender.com/token', {
 				method: 'POST',
 				body: formData
 			});
 			if (response.ok) {
-				console.log('hello world');
 				const data = await response.json();
+				console.log(data);
 				accessToken = data.access_token;
 				console.log('Access Token:', accessToken);
 				// You can store the access token in a secure location or use it for subsequent API requests
@@ -34,21 +36,22 @@
 				goto('/home');
 			} else {
 				console.error('Login failed');
+				console.log(response.status);
 				// Handle login failure
 			}
 		} catch (error) {
 			console.error('An error occurred during login:', error);
 			// Handle error
+		} finally {
+			isLoading = false;
 		}
 	}
 
-	let signupUsername = '';
 	let signupPassword = '';
 	let signupEmail = '';
 	let signupName = '';
 	let signupProfilePic = '';
 
-	// https://accounts-backend-api.onrender.com/api/user new user api endpoint for function handleSignUp
 	async function handleSignUp() {
 		isLoading = true;
 		const formData = new FormData();
@@ -67,34 +70,34 @@
 		};
 
 		try {
-			// API ENDPOINT FOR TESTING
-			// const response = await fetch('http://127.0.0.1:8000/api/user', {
-			// API ENDPOINT FOR LIVE
-			const response = await fetch('https://accounts-backend-api.onrender.com/api/user', {
+			const response = await fetch('http://127.0.0.1:8000/api/user', {
+				// const response = await fetch('https://accounts-backend-api.onrender.com/api/user', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify(payload)
 			});
-
 			if (response.ok) {
 				const data = await response.json();
-				console.log(data);
-				accessToken = data.access_token;
-				console.log('Access Token:', accessToken);
-				// You can store the access token in a secure location or use it for subsequent API requests
-				document.cookie = `access_token=${encodeURIComponent(accessToken)}`;
-				$isLoggedIn = true;
-				goto('/home');
+				console.log(signupEmail);
+				console.log(signupPassword);
+				username = signupEmail;
+				password = signupPassword;
+				await handleLogin();
 				console.log('Account creation successful! Logging you in...');
 				alert('Account creation successful! Logging you in...');
+
 				// Handle success, e.g., display a success message
 			} else {
 				const responseData = await response.json();
 				if (response.status === 409) {
 					console.error('User already exists');
-					alert('A user with that email address already exists, try again!');
+					alert('A user with that email address already exists. Try another email address.');
+					signupEmail = '';
+					signupPassword = '';
+					signupName = '';
+					signupProfilePic = '';
 				}
 				// Handle failure, e.g., display an error message
 			}
@@ -197,13 +200,14 @@ console.log('Stored Access Token:', storedAccessToken); -->
 							<label for="signup-password" class="block text-sm font-medium text-gray-700"
 								>Password</label
 							>
-							<input
+							<!-- <input
 								type="password"
 								id="signup-password"
 								class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
 								bind:value={signupPassword}
 								required
-							/>
+							/> -->
+							<PasswordStrengthMeter bind:password={signupPassword} />
 						</div>
 						<div class="mb-4">
 							<label for="signup-name" class="block text-sm font-medium text-gray-700">Name</label>
@@ -230,9 +234,8 @@ console.log('Stored Access Token:', storedAccessToken); -->
 					</form>
 				</div>
 			{/if}
-		{:else}
-			<div class="loader">Loading...</div>
 		{/if}
+		<div class="loader">Loading...</div>
 
 		<button
 			class="w-full py-2 px-4 mt-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"

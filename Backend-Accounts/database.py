@@ -1,6 +1,7 @@
 from models import User
 import motor.motor_asyncio
 import os
+from bson.objectid import ObjectId
 from passlib.context import CryptContext
 from dotenv import load_dotenv
 from models import UserInDB
@@ -50,5 +51,5 @@ async def update_user(id, user):
 
 
 async def remove_user(id):
-    await collection.delete_one({"_id": id})
+    await collection.delete_one({"_id": ObjectId(id)})
     return True

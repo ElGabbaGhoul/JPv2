@@ -9,6 +9,7 @@
 		{#if $isLoggedIn}
 			<NavMenu />
 		{/if}
+		<hr class="my-4" />
 		<slot />
 	</main>
 
