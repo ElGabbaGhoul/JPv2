@@ -19,9 +19,9 @@
 
 		try {
 			// API ENDPOINT FOR TESTING
-			const response = await fetch('http://127.0.0.1:8000/token', {
-				// API ENDPOINT FOR LIVE
-				// const response = await fetch('https://accounts-backend-api.onrender.com/token', {
+			// const response = await fetch('http://127.0.0.1:8000/token', {
+			// API ENDPOINT FOR LIVE
+			const response = await fetch('https://accounts-backend-api.onrender.com/token', {
 				method: 'POST',
 				body: formData
 			});
@@ -70,8 +70,8 @@
 		};
 
 		try {
-			const response = await fetch('http://127.0.0.1:8000/api/user', {
-				// const response = await fetch('https://accounts-backend-api.onrender.com/api/user', {
+			// const response = await fetch('http://127.0.0.1:8000/api/user', {
+			const response = await fetch('https://accounts-backend-api.onrender.com/api/user', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
