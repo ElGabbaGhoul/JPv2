@@ -81,7 +81,7 @@ async def check_db_for_user(username):
 
 async def authenticate_user_by_email(email, plain_password):
     user = await collection.find_one({"username": email})
-    if user and verify_password(plain_password, user.get('hashed_password')):
+    if user and await verify_password(plain_password, user.get('hashed_password')):
         return UserInDB(**user)
     return None
 
