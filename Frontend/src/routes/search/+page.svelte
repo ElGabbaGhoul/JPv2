@@ -1,2 +1,2 @@
 <div>Hello Search</div>
-<div>Nothing here...yet!</div>
+<div>This is where the search functionality will go!</div>

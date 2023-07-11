@@ -1,2 +1,2 @@
-<div>Hello Search</div>
-<div>Nothing here...yet!</div>
+<div>Hello Library</div>
+<div>This is where your library of playlists will go.</div>

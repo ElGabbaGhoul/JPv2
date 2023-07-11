@@ -1,2 +1,2 @@
-<div>Hello Search</div>
-<div>Nothing here...yet!</div>
+<div>Hello Account</div>
+<div>This is where your account info will be!</div>

@@ -3,6 +3,18 @@
 	import { onMount } from 'svelte';
 	import { isLoggedIn } from '$lib/stores/stores';
 	import PasswordStrengthMeter from '$lib/components/PasswordStrengthMeter.svelte';
+	import { PUBLIC_BACKEND_USERS } from '$env/static/public';
+	import WaveComponent from '$lib/components/WaveComponent.svelte';
+
+	let isMouseOver = false;
+
+	function handleMouseOver() {
+		isMouseOver = true;
+	}
+
+	function handleMouseOut() {
+		isMouseOver = false;
+	}
 
 	let isLoading = false;
 	let username = '';
@@ -18,10 +30,7 @@
 		formData.append('password', password);
 
 		try {
-			// API ENDPOINT FOR TESTING
-			// const response = await fetch('http://127.0.0.1:8000/token', {
-			// API ENDPOINT FOR LIVE
-			const response = await fetch('https://accounts-backend-api.onrender.com/token', {
+			const response = await fetch(`${PUBLIC_BACKEND_USERS}/token`, {
 				method: 'POST',
 				body: formData
 			});
@@ -70,8 +79,7 @@
 		};
 
 		try {
-			// const response = await fetch('http://127.0.0.1:8000/api/user', {
-			const response = await fetch('https://accounts-backend-api.onrender.com/api/user', {
+			const response = await fetch(`${PUBLIC_BACKEND_USERS}/api/user`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
@@ -145,7 +153,9 @@ console.log('Stored Access Token:', storedAccessToken); -->
 		>
 			Welcome to JamPack'd!
 		</div>
-		{#if !isLoading}
+		{#if isLoading}
+			<div class="loader flex flex-row gap-1"><WaveComponent /><WaveComponent /></div>
+		{:else}
 			{#if !showSignUpForm}
 				<!-- Login Form -->
 				<h1 class="text-2xl font-semibold mb-6">Login</h1>
@@ -234,19 +244,31 @@ console.log('Stored Access Token:', storedAccessToken); -->
 					</form>
 				</div>
 			{/if}
-		{/if}
-		<div class="loader">Loading...</div>
 
-		<button
-			class="w-full py-2 px-4 mt-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-			on:click={toggleSignUpForm}
+			<button
+				class="w-full py-2 px-4 mt-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+				on:click={toggleSignUpForm}
+			>
+				{#if showSignUpForm}
+					Back to Login
+				{:else}
+					Sign up
+				{/if}
+			</button>
+		{/if}
+		<div
+			class="{isMouseOver
+				? 'text-rainbow'
+				: ''} text-black w-32 mx-auto flex justify-center items-center mt-10 bg-gray-300 rounded"
+			role="button"
+			tabindex="0"
+			on:mouseover={handleMouseOver}
+			on:mouseout={handleMouseOut}
+			on:focus={handleMouseOver}
+			on:blur={handleMouseOut}
 		>
-			{#if showSignUpForm}
-				Back to Login
-			{:else}
-				Sign up
-			{/if}
-		</button>
+			<a href="https://www.buymeacoffee.com/scnideffer">Buy me a coffee!</a>
+		</div>
 	</div>
 </main>
 

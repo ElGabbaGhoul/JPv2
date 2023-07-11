@@ -1,3 +1,5 @@
 ./venv
 .env
 JOURNAL.md
+Dockerfile
+.dockerignore

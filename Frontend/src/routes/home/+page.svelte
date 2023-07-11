@@ -1,2 +1,2 @@
-<div>Hello Search</div>
-<div>Nothing here...yet!</div>
+<div>Hello Home</div>
+<div>This is where the homepage lives!</div>
