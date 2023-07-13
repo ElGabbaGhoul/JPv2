@@ -3,6 +3,8 @@ from pydantic import BaseModel, Field
 from bson.objectid import ObjectId
 from typing import List, Optional
 from bson import ObjectId
+from Backend_Accounts.models import TokenData, UserInDB
+
 
 
 class PyObjectId(ObjectId):
@@ -40,6 +42,8 @@ class Playlist(BaseModel):
     creator_notes: Optional[str]
     image_url: Optional[str]
     listener_comments: Optional[List[str]]
+    collaborators: Optional[List[str]] = []
+    is_collaborative: bool
 
 
     class Config:
@@ -72,6 +76,7 @@ class UpdatePlaylistModel(BaseModel):
     description: Optional[str] 
     created_on: Optional[str]
     updated_on: Optional[str] 
+    created_by: Optional[str] 
     owner_id: Optional[str] 
     tracks: Optional[list]
     duration: Optional[int] 
@@ -80,6 +85,8 @@ class UpdatePlaylistModel(BaseModel):
     creator_notes: Optional[str] 
     image_url: Optional[str]
     listener_comments: Optional[list] 
+    collaborators: Optional[List[str]] = []
+    is_collaborative: Optional[bool]
 
     class Config:
         arbitrary_types_allowed = True

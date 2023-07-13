@@ -1,13 +1,13 @@
 from models import Playlist
 import motor.motor_asyncio  # MongoDB Driver
-# from bson.objectid import ObjectId
+from bson.objectid import ObjectId
 import os
 from dotenv import load_dotenv
 load_dotenv()
 connection_string = os.environ.get('DB_CONNECTION')
 
-client = motor.motor_asyncio.AsyncIOMotorClient(connection_string)  # helps to connect with mongodb compass
-database = client.PlaylistList  # name of database
+client = motor.motor_asyncio.AsyncIOMotorClient(connection_string)
+database = client.PlaylistList
 collection = database.playlist
 
 # Playlist DB Calls Start
@@ -45,6 +45,5 @@ async def update_playlist(id, playlist):
 
 
 async def remove_playlist(id):
-    await collection.delete_one({"_id": id})
+    await collection.delete_one({"_id": ObjectId(id)})
     return True
-# Playlist DB Calls End

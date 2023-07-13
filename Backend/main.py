@@ -1,5 +1,16 @@
-from fastapi import FastAPI, HTTPException, Body
+import sys
+from pathlib import Path
+
+# Add the parent directory to the module search path
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
+# Import the User class
+from Backend_Accounts.models import User
+from fastapi import FastAPI, HTTPException, Body, Depends
 from models import Playlist, UpdatePlaylistModel
+from bson import ObjectId
+
+from Backend_Accounts.utils import get_current_user
 
 from database import (
     fetch_all_playlists,
@@ -43,8 +54,10 @@ async def get_all_playlists():
 
 
 @app.post("/api/playlist", response_description="Add a new playlist", response_model=Playlist)
-async def post_playlist(playlist: Playlist = Body(...)):
-    playlist = jsonable_encoder(playlist)
+async def post_playlist(playlist: Playlist = Body(...), current_user: User = Depends(get_current_user)):
+    playlist_dict = playlist.dict()
+    playlist_dict['created_by'] = ObjectId(current_user.id)
+    playlist = jsonable_encoder(playlist_dict)
     response = await create_playlist(playlist)
     if response:
         return response
