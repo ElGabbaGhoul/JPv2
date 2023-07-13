@@ -7,7 +7,7 @@
 	import { isLoggedIn } from '$lib/stores/stores';
 </script>
 
-<nav>
+<nav class="bg-slate-700">
 	<ul class="flex flex-row gap-5 text-white">
 		<li><a class="flex flex-row gap-2 items-center" href="/home"><HomeIcon />Home</a></li>
 		<li><a class="flex flex-row gap-1.5 items-center" href="/search"><SearchIcon />Search</a></li>
