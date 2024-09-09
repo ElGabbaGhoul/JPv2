@@ -49,3 +49,6 @@
 
   - reorganized accounts main.py, utils.py, models.py
   - utils.py and main.py in backend-accounts have redundant functions that are counterintuitive. rework these functions and your backend will work fine.
+
+## 09/09/2024
+  - Long time no touch. Worked on getting a new idea in place. Was able to log in and create new users. Need to figure a way to delete the cookie when logging out.

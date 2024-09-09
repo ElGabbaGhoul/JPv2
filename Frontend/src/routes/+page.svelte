@@ -38,7 +38,7 @@
 				const data = await response.json();
 				console.log(data);
 				accessToken = data.access_token;
-				console.log('Access Token:', accessToken);
+				// console.log('Access Token:', accessToken);
 				// You can store the access token in a secure location or use it for subsequent API requests
 				document.cookie = `access_token=${encodeURIComponent(accessToken)}`;
 				$isLoggedIn = true;
