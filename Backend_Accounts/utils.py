@@ -5,7 +5,6 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from dotenv import load_dotenv
 from models import TokenData, UserInDB, User
-from Backend_Accounts.database import fetch_one_user
 import motor.motor_asyncio
 from typing import Optional
 
@@ -28,6 +27,15 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
 
 
 # Begin Auth
+
+#I wanted to have this function in database.py, and import it, but that wasn't
+#working. So I put it here.
+async def fetch_one_user(username):
+    user = await collection.find_one({"username": username})
+    if user is not None:
+        return UserInDB(**user)
+    
+
 async def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
