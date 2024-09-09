@@ -74,7 +74,6 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     user = get_user(db, username=token_data.username)
     if user is None:
         raise credential_exception
-    
     return user
 
 async def get_user(username:str) -> Optional[User]:
