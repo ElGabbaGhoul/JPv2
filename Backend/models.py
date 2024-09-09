@@ -1,9 +1,7 @@
-# from typing import Optional
 from pydantic import BaseModel, Field
-from bson.objectid import ObjectId
 from typing import List, Optional
 from bson import ObjectId
-from Backend_Accounts.models import TokenData, UserInDB
+from Backend_Accounts.models import TokenData, UserInDB, User
 
 
 

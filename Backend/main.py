@@ -1,16 +1,12 @@
 import sys
 from pathlib import Path
-
-# Add the parent directory to the module search path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
-
-# Import the User class
 from Backend_Accounts.models import User
 from fastapi import FastAPI, HTTPException, Body, Depends
-from models import Playlist, UpdatePlaylistModel
 from bson import ObjectId
-
+from models import Playlist, UpdatePlaylistModel
 from Backend_Accounts.utils import get_current_user
+from Backend_Accounts.models import User
 
 from database import (
     fetch_all_playlists,

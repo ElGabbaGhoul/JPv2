@@ -4,9 +4,10 @@ from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from dotenv import load_dotenv
-from models import TokenData, UserInDB
-from database import fetch_one_user
+from models import TokenData, UserInDB, User
+from Backend_Accounts.database import fetch_one_user
 import motor.motor_asyncio
+from typing import Optional
 
 load_dotenv()
 import os
@@ -39,7 +40,7 @@ async def authenticate_user(email: str, password: str,):
         return False
     return user
 
-def create_access_token(data: dict, expires_delta: timedelta or None=None):
+async def create_access_token(data: dict, expires_delta: timedelta or None=None):
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -67,6 +68,13 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         raise credential_exception
     
     return user
+
+async def get_user(username:str) -> Optional[User]:
+    user = collection.find_one({"username": username})
+    if user:
+        return User(**user)
+    else:
+        return None
 
 async def get_current_active_user(current_user: UserInDB = Depends(get_current_user)):
     if current_user.disabled:

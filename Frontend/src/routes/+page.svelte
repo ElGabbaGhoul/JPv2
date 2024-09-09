@@ -146,11 +146,9 @@ console.log('Stored Access Token:', storedAccessToken); -->
 	<meta name="description" content="JamPack'd! Create playlists from every music library!" />
 </svelte:head>
 
-<main class="flex items-center justify-center min-h-screen bg-gray-100">
+<main class="flex items-center justify-center min-h-screen min-w-screen bg-gray-100">
 	<div class="bg-white p-8 rounded shadow-md w-96">
-		<div
-			class="flex flex-row w-full justify-center font-bold text-[28px] whitespace-nowrap text-rainbow"
-		>
+		<div class="flex flex-row justify-center font-bold text-[28px] whitespace-nowrap text-rainbow">
 			Welcome to JamPack'd!
 		</div>
 		{#if isLoading}
@@ -259,7 +257,7 @@ console.log('Stored Access Token:', storedAccessToken); -->
 		<div
 			class="{isMouseOver
 				? 'text-rainbow'
-				: ''} text-black w-32 mx-auto flex justify-center items-center mt-10 bg-gray-300 rounded"
+				: ''} text-black w-28 mx-auto flex justify-center items-center text-wrap mt-10 bg-gray-300 rounded"
 			role="button"
 			tabindex="0"
 			on:mouseover={handleMouseOver}
@@ -267,7 +265,7 @@ console.log('Stored Access Token:', storedAccessToken); -->
 			on:focus={handleMouseOver}
 			on:blur={handleMouseOut}
 		>
-			<a href="https://www.buymeacoffee.com/scnideffer">Buy me a coffee!</a>
+			<a href="https://www.buymeacoffee.com/scnideffer">☕</a>
 		</div>
 	</div>
 </main>

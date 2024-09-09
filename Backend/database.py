@@ -1,5 +1,5 @@
 from models import Playlist
-import motor.motor_asyncio  # MongoDB Driver
+import motor.motor_asyncio
 from bson.objectid import ObjectId
 import os
 from dotenv import load_dotenv
